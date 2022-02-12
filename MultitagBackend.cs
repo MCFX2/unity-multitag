@@ -1,5 +1,5 @@
 //Author & Copyright: Charles Osberg
-//Licensed under MIT, DES315 2022 edition.
+//Licensed under MIT, public release edition
 //For updates, bug reports, and feature requests, see https://github.com/MCFX2/unity-multitag
 
 using System;

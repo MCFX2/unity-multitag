@@ -123,9 +123,9 @@ public class MultitagInspector : Editor
                 currentNewTag = "";
                 EditorUtility.SetDirty(tagObj);
             }
-            else if (tagObj.Tags.Count > 0)
+            else if (Multitag.AllTags.Count > 0)
             {
-                tagObj.Tags.Add(tagObj.Tags[0]);
+                tagObj.Tags.Add(Multitag.AllTags[0]);
                 EditorUtility.SetDirty(tagObj);
             }
         }

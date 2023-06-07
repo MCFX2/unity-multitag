@@ -122,7 +122,10 @@ public class MultitagInspector : Editor
                 currentNewTag = "";
                 EditorUtility.SetDirty(tagObj);
             }
- 
+            else if (tagObj.Tags.Count > 0)
+            {
+                tagObj.Tags.Add(tagObj.Tags[0]);
+            }
         }
 
         if (forceClear)

@@ -97,11 +97,12 @@ public class MultitagInspector : Editor
 
         var forceSubmit = false;
         var forceClear = false;
-        var curKeyboardInput = Event.current;
+        var curKeyboardInput = Event.current; 
         if (curKeyboardInput.isKey)
         {
-            if (curKeyboardInput.keyCode == KeyCode.KeypadEnter
+            if ((curKeyboardInput.keyCode == KeyCode.KeypadEnter
                 || curKeyboardInput.keyCode == KeyCode.Return)
+                && curKeyboardInput.type == EventType.KeyUp)
             {
                 forceSubmit = true;
             }
@@ -125,6 +126,7 @@ public class MultitagInspector : Editor
             else if (tagObj.Tags.Count > 0)
             {
                 tagObj.Tags.Add(tagObj.Tags[0]);
+                EditorUtility.SetDirty(tagObj);
             }
         }
 

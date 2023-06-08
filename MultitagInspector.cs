@@ -24,6 +24,8 @@ public class MultitagInspector : Editor
     private void TagEdit(Rect rect, int index, bool isActive, bool isFocused)
     {
         if (index >= tagObj.Tags.Count) return;
+
+        var isLastElement = index == tagObj.Tags.Count - 1;
         
         var element = list.serializedProperty.GetArrayElementAtIndex(index);
         rect.y += 2;
@@ -43,15 +45,16 @@ public class MultitagInspector : Editor
             tagList.ToArray()
         );
 
+
         if (curSelection != selection)
         {
             tagObj.Tags[index] = Multitag.AllTags[selection];
             EditorUtility.SetDirty(tagObj);
         }
-
+        
         if (Multitag.AllTags.Contains(tagObj.Tags[index]))
         {
-            if (GUI.Button(new Rect(rect.x + rect.width - 100, rect.y, 80, EditorGUIUtility.singleLineHeight), "Unregister"))
+            if (GUI.Button(new Rect(rect.x + rect.width - 100, rect.y, 80, EditorGUIUtility.singleLineHeight), "Unregister")) 
             {
                 Multitag.DestroyTag(tagObj.Tags[index]);
             }
@@ -63,11 +66,10 @@ public class MultitagInspector : Editor
                 Multitag.AddTags(new List<string>{tagObj.Tags[index]});
             }
         }
-
-
+            
         if (GUI.Button(new Rect(rect.x + rect.width - 20, rect.y, 20, EditorGUIUtility.singleLineHeight), "X"))
         {
-            tagObj.Tags.RemoveAt(index);
+            tagObj.Tags.RemoveAt(index); 
             EditorUtility.SetDirty(tagObj);
         }
     }
@@ -110,9 +112,50 @@ public class MultitagInspector : Editor
                 forceClear = true;
             }
         }
+
+        var tagList = Multitag.AllTags.ToList().Where(t => !tagObj.Tags.Contains(t));
+        var selectionTags = tagList as string[] ?? tagList.ToArray();
+        var showDropdown = selectionTags.Any();
+        var tagDropdownWidth = showDropdown ? 100 : 0;
+        var totalControlWidth = EditorGUIUtility.currentViewWidth;
+        const int marginLeftEdge = 20;
+        const int marginRightEdge = 10;
+        const int addButtonWidth = 30;
+
+        if (showDropdown)
+        {
+            var oldWidth = EditorGUIUtility.labelWidth;
+            EditorGUIUtility.labelWidth = 50;
+            var emptySelection = EditorGUI.Popup(
+                new Rect(marginLeftEdge, list.GetHeight(), tagDropdownWidth, EditorGUIUtility.singleLineHeight),
+                "Add...",
+                -1,
+                selectionTags.ToArray()
+            );
+            EditorGUIUtility.labelWidth = oldWidth;
+
+            if (emptySelection != -1)
+            {
+                tagObj.Tags.Add(selectionTags[emptySelection]);
+                EditorUtility.SetDirty(tagObj);
+            }
+        }
+
+        currentNewTag = EditorGUI.TextField(
+            new Rect(
+                marginLeftEdge + tagDropdownWidth, 
+                list.GetHeight(), 
+                totalControlWidth - tagDropdownWidth - marginLeftEdge - marginRightEdge - addButtonWidth, 
+                EditorGUIUtility.singleLineHeight),
+            currentNewTag);
         
-        currentNewTag = EditorGUI.TextField(new Rect(20, list.GetHeight(), 350, EditorGUIUtility.singleLineHeight),currentNewTag);
-        if (GUI.Button(new Rect(370, list.GetHeight(), 50, EditorGUIUtility.singleLineHeight), "Add")
+        if (GUI.Button(
+                new Rect(
+                    totalControlWidth - marginRightEdge - addButtonWidth,
+                    list.GetHeight(),
+                    addButtonWidth, 
+                    EditorGUIUtility.singleLineHeight), 
+                "+")
         || forceSubmit)
         {
             currentNewTag = currentNewTag.Trim();
